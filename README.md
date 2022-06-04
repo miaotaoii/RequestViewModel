@@ -1,7 +1,7 @@
 # **RequestViewModel**
-**支持网络请求的ViewMode框架【ViewModel+LiveData+Retrofit】** 
+**长期更新 支持网络请求的ViewMode框架【ViewModel+LiveData+Retrofit】** 
 
-github 地址：  [https://github.com/miaotaoii/-RequestViewModel.git](https://github.com/miaotaoii/-RequestViewModel.git)
+github 地址：https://github.com/miaotaoii/RequestViewModel.git
 
 ### 优势：
 
