@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 //主动刷新livedata数据
                 //根据requestObj的api注解，复用已存在的livedata
                 requestObj.setArgs(new String[]{formatInputArg()});
-                requestViewModel.getRequestLiveData(requestObj, OliPriceLiveData.class).refresh();
+                liveData.refresh();
             }
         });
 
