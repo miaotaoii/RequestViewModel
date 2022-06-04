@@ -1,6 +1,25 @@
+//apply plugin: 'com.github.dcendents.android-maven'
 plugins {
     id 'com.android.library'
+    id 'com.github.dcendents.android-maven'
+    id 'maven-publish'
+
 }
+group='com.github.miaotaoii'
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.miaotaoii'
+                artifactId ='RequestViewModel'
+                version = '0.1'
+            }
+        }
+    }
+}
+
 
 android {
     compileSdkVersion 32
