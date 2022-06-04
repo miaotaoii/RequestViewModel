@@ -1,0 +1,20 @@
+package com.requestVM.demo.api;
+
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+
+/**
+ * @author:eric
+ * @date:6/4/22
+ */
+public interface RetrofitDataApi {
+
+    public static final String requestOilprice = "/oilprice/index?key=3c5ee42145c852de4147264f25b858dc";
+    public static final String baseUrl = "http://api.tianapi.com";
+
+    @GET(requestOilprice)
+    Call<ResponseJsonBean> getOliPrice(@Query("prov") String prov);
+
+
+}
