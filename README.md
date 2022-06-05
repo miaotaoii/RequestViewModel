@@ -12,7 +12,29 @@ github 地址：https://github.com/miaotaoii/RequestViewModel.git
 
  RequestViewMode自动对LiveData进行缓存管理，每个retrofit api接口复用一个livedata
 
-# 使用：
+# Gradle 
+项目根目录下 build.gradle 添加
+
+```
+allprojects {
+    repositories {
+        google()
+        maven { url 'https://jitpack.io' }
+        jcenter()
+    }
+}
+```
+module的build.gradle 中添加：
+
+```
+dependencies {
+
+	implementation 'com.github.miaotaoii:RequestViewModel:v0.5'
+
+}
+```
+# 使用
+
 ## 1.retrofit接口的声明
 `RequestViewModel`内部使用`retrofit`进行网络请求，根据请求参数和返回的泛型类型管理api请求的创建，这一步是Retrofit的基本步骤；
 你需要在初始化app时，额外使用`RetrofitUtil`配置Retrofit baseUrl
