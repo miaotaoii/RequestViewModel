@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 30
     buildToolsVersion "30.0.3"
     dataBinding {
         enabled = true
@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "com.flowerroad.requestviewmodel"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -31,9 +31,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.android.material:material:1.6.0'
-
-
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation project(path: ':RequestViewModel')
 }
