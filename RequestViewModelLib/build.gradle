@@ -14,7 +14,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.miaotaoii'
                 artifactId ='RequestViewModelLib'
-                version = '0.1'
+                version = '0.4'
             }
         }
     }
