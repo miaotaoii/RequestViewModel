@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
 }
-
+group='com.github.miaotaoii.demo'
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
