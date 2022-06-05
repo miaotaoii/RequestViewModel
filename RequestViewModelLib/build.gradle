@@ -13,8 +13,8 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
                 groupId = 'com.github.miaotaoii'
-                artifactId ='RequestViewModel'
-                version = '0.2'
+                artifactId ='RequestViewModelLib'
+                version = '0.1'
             }
         }
     }
