@@ -14,7 +14,7 @@ abstract public class RequestObj<T, S> extends Request<T> {
     private Object[] args;
     private String apiAnnotation;
 
-  void setApiAnnotation(String apiAnnotation) {
+    public void setApiAnnotation(String apiAnnotation) {
         this.apiAnnotation = apiAnnotation;
     }
 
