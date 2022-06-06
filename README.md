@@ -29,14 +29,14 @@ module的build.gradle 中添加：
 ```
 dependencies {
 
-	implementation 'com.github.miaotaoii:RequestViewModel:1.0.1'
+	implementation 'com.github.miaotaoii:RequestViewModel:1.0.2'
 
 }
 ```
 # 使用
 
 ## 1.retrofit接口的声明
-`RequestViewModel`内部使用`retrofit`进行网络请求，根据请求的注解字符串管理retrofit请求对象的创建，这一步是Retrofit的基本步骤；
+`RequestViewModel`内部使用`retrofit`进行网络请求，框架会根据请求的注解字和参数及返回值类型管理retrofit请求对象的创建；第一步是Retrofit的基本步骤；
 
 ```java
 RetrofitUtil.baseUrl = RetrofitDataApi.baseUrl;
@@ -192,3 +192,21 @@ protected void onCreate(Bundle savedInstanceState) {
             }
         });
 ```
+
+## 8.日志打印
+默认只打印ERROR日志，INFO日志开启后将打印所有请求执行的api接口方法签名、请求参数、请求response code以及处理请求的对象hash值。
+
+```java
+RetrofitConfig.setLogLevel(Logger.LogLevel.INFO);
+```
+
+```java
+
+I/[RequestViewModel]: TypedRequest[com.ocode.requestvm.request.TypedRequestImpl@96f475c] ------>[interface com.requestVM.demo.api.RetrofitDataApi]  (public abstract retrofit2.Call<com.requestVM.demo.api.ResponseJsonBean> com.requestVM.demo.api.RetrofitDataApi.getOliPrice(java.lang.String,java.lang.String)) args{上海,test,}
+I/[RequestViewModel]: TypedRequest[com.ocode.requestvm.request.TypedRequestImpl@96f475c ]onResponse call return success code=200
+
+```
+
+
+
+
