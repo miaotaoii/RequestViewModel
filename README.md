@@ -38,10 +38,6 @@ dependencies {
 ## 1.retrofit接口的声明
 `RequestViewModel`内部使用`retrofit`进行网络请求，框架会根据请求的注解字和参数及返回值类型管理retrofit请求对象的创建；第一步是Retrofit的基本步骤；
 
-```java
-RetrofitUtil.baseUrl = RetrofitDataApi.baseUrl;
-
-```
 
 ```java
 public interface RetrofitDataApi {
