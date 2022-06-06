@@ -1,18 +1,18 @@
 package com.requestVM.demo;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
+
 import com.flowerroad.requestviewmodel.R;
 import com.flowerroad.requestviewmodel.databinding.ActivityMainBinding;
 import com.ocode.requestvm.request.RequestObj;
-import com.ocode.requestvm.request.RetrofitUtil;
+import com.ocode.requestvm.request.RetrofitConfig;
 import com.ocode.requestvm.viewmodel.RequestViewModel;
 import com.ocode.requestvm.viewmodel.RequestViewModelProvider;
 import com.requestVM.demo.api.ResponseJsonBean;
@@ -31,8 +31,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //配置Retrofit client baseurl
-        RetrofitUtil.baseUrl = RetrofitDataApi.baseUrl;
+
         //使用databinding绑定view
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mainBinding.setLifecycleOwner(this);

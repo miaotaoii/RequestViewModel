@@ -14,7 +14,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.miaotaoii'
                 artifactId ='RequestViewModelLib'
-                version = '1.0.0'
+                version = '1.0.1'
             }
         }
     }
@@ -28,8 +28,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 32
-        versionCode 1
-        versionName "1.0"
+        versionCode 101
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -61,7 +61,7 @@ dependencies {
     implementation 'com.squareup.okio:okio:1.15.0'
 
     implementation 'com.squareup.retrofit2:retrofit:2.0.2'
-    implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
+    api 'com.squareup.retrofit2:converter-gson:2.0.2'
     implementation 'com.google.code.gson:gson:2.8.5'
     api 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
 }
