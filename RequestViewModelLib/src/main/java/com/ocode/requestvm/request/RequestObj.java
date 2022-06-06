@@ -23,7 +23,8 @@ abstract public class RequestObj<T, S> extends Request<T> {
     }
 
     public Type getReturnClsType() {
-        return ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        Type type =  ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        return type;
     }
 
     public void setArgs(Object[] args) {

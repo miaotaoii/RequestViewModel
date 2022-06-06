@@ -16,5 +16,7 @@ public interface RetrofitDataApi {
     @GET(requestOilprice)
     Call<ResponseJsonBean> getOliPrice(@Query("prov") String prov);
 
-
+    //测试相同注解不同方法签名时的调用
+    @GET(requestOilprice)
+    Call<ResponseJsonBean> getOliPrice(@Query("prov") String prov, @Query("name") String name);
 }

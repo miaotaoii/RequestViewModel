@@ -29,15 +29,14 @@ module的build.gradle 中添加：
 ```
 dependencies {
 
-	implementation 'com.github.miaotaoii:RequestViewModel:1.0.0'
+	implementation 'com.github.miaotaoii:RequestViewModel:1.0.1'
 
 }
 ```
 # 使用
 
 ## 1.retrofit接口的声明
-`RequestViewModel`内部使用`retrofit`进行网络请求，根据请求参数和返回的泛型类型管理api请求的创建，这一步是Retrofit的基本步骤；
-你需要在初始化app时，额外使用`RetrofitUtil`配置Retrofit baseUrl
+`RequestViewModel`内部使用`retrofit`进行网络请求，根据请求的注解字符串管理retrofit请求对象的创建，这一步是Retrofit的基本步骤；
 
 ```java
 RetrofitUtil.baseUrl = RetrofitDataApi.baseUrl;
@@ -54,10 +53,28 @@ public interface RetrofitDataApi {
     Call<ResponseJsonBean> getOliPrice(@Query("prov") String prov);
 }
 ```
+## 2.retrofit配置
+你需要在初始化app时，额外使用`RetrofitConfig`配置你自己的Retrofit实例或使用默认创建retrofit实例
+### 方式1：
+使用项目已有的retrofit实例
+```  
+Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(RetrofitDataApi.baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(new OkHttpClient.Builder()
+                        .build())
+                .build();
+RetrofitConfig.getInstance(retrofit).init();
 
+```
+### 方式2：
+设置baseurl，框架会帮你创建默认的retrofit实例
+```
+RetrofitConfig.getInstance(RetrofitDataApi.baseUrl).init();
 
+```
 
-## 2.在Activity或Fragment中创建请求对象 
+## 3.在Activity或Fragment中创建请求对象 
 你需要设置请求参数，并在`RequestObj`构造器中传入retrofit api接口中的的GET或POST注解字符串。参数顺序必须保持和`requestObj` 的api注解对应的api接口参数一致
 
 
@@ -79,7 +96,7 @@ RequestObj<ResponseJsonBean, PriceBean> requestObj = new RequestObj<ResponseJson
 }
 ```
 
-## 3.继承RequestLiveData，处理返回数据
+## 4.继承RequestLiveData，处理返回数据
 在这里将服务器返回的数据类型转换为UI需要的类型，并通过`LiveData post()`数据到UI
 
 ```java
@@ -108,7 +125,7 @@ public class OliPriceLiveData extends RequestLiveData<ResponseJsonBean, PriceBea
 }
 ```
 
-## 4.使用`RequestViewModel`和`RequestLiveData`请求数据
+## 5.使用`RequestViewModel`和`RequestLiveData`请求数据
 
 `RequestViewModel`由`RequestViewModelProvider`提供，你需要传入Retrofit api接口类型；你也可以自定义ViewModel继承自`RequestViewModel`来处理更多业务逻辑；每个`RequestViewModel`可以自动管理多个`RequestLiveData`，`RequestObj`中的retrofit api注解字符串决定了VeiwModel是否创建新的`RequestLiveData`或者复用旧的。
 
@@ -145,7 +162,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-## 5.设置请求参数，主动请求数据
+## 6.设置请求参数，主动请求数据
 
 
 你也可以使用`RequestLiveData` 的refresh 方法主动刷新数据；并使用`RequestObj` `setArgs()`方法设置新的参数。
@@ -157,7 +174,7 @@ protected void onCreate(Bundle savedInstanceState) {
 
 
 
-## 6.观察RequestLvieData数据变化
+## 7.观察RequestLvieData数据变化
 同样作为`LiveData`的子类，你也可以使用observe接口观察数`RequestLiveData`据变化
 
 

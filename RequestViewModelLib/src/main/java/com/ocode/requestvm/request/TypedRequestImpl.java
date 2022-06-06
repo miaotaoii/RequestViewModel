@@ -5,18 +5,21 @@ import androidx.annotation.NonNull;
 import com.ocode.requestvm.util.Logger;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HEAD;
+import retrofit2.http.OPTIONS;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
-import retrofit2.http.Query;
 
 
 /**
@@ -44,16 +47,37 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
         this.requestObj = requestObj;
     }
 
+    private boolean checkArgs(Method method, Object[] args) {
+        Class<?>[] paraCls = method.getParameterTypes();
+        if (args == null || args.length == 0) {//没有请求参数
+            return paraCls == null || paraCls.length == 0;
+        } else {
+            if (paraCls.length != args.length) return false;
+            //挨个检查请求参数的类型 如果都一致及就返回true
+            for (int i = 0; i < paraCls.length; i++) {
+                if (paraCls[i] != args[i].getClass()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     private Method getMethodInApi(String apiAnnotation) {
         Method[] methods = dataApi.getClass().getInterfaces()[0].getDeclaredMethods();
+        ArrayList<Method> sameAnnotationMethod = new ArrayList<>();
         for (Method m :
                 methods) {
             if (checkMethodAnnotation(apiAnnotation, m)) {
-                return m;
+                sameAnnotationMethod.add(m);
             }
         }
-        return null;
+        if (sameAnnotationMethod.size() == 0) return null;
+        if (sameAnnotationMethod.size() == 1) return sameAnnotationMethod.get(0);
+
+        //具有多个相同注解的api接口方法时，检查参数和返回值类型
+        Method[] methodsArr = new Method[sameAnnotationMethod.size()];
+        return checkMethodArgsAndReturnType(requestObj.getReturnClsType(), requestObj.getArgsInternal(), (Method[]) sameAnnotationMethod.toArray(methodsArr));
     }
 
     private boolean checkMethodAnnotation(String anno, Method method) {
@@ -67,11 +91,37 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
                 return ((POST) a).value().equals(anno);
             } else if (a instanceof DELETE) {
                 return ((DELETE) a).value().equals(anno);
-            } else if (a instanceof Query) {
-                return ((Query) a).value().equals(anno);
+            } else if (a instanceof OPTIONS) {
+                return ((OPTIONS) a).value().equals(anno);
+            } else if (a instanceof PATCH) {
+                return ((PATCH) a).value().equals(anno);
+            } else if (a instanceof HEAD) {
+                return ((HEAD) a).value().equals(anno);
             }
         }
         return false;
+    }
+
+
+    private Method checkMethodArgsAndReturnType(Type returnCls, Object[] args, Method[] methods) {
+        for (Method m :
+                methods) {
+            Type type = m.getGenericReturnType();
+            if (type instanceof ParameterizedType) {
+                if (((ParameterizedType) type).getActualTypeArguments()[0].equals(returnCls)) {
+                    if (checkArgs(m, args)) {
+                        return m;
+                    }
+                }
+            } else {
+                if (type.equals(returnCls)) {
+                    if (checkArgs(m, args)) {
+                        return m;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void request() {
@@ -106,13 +156,13 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
 
         @Override
         public void onFailure(Call<T> call, Throwable t) {
-            Logger.logE("TypedRequest[" +  TypedRequestImpl.this + "]HandleResponseCallBack onFailure call " + t.getLocalizedMessage());
+            Logger.logE("TypedRequest[" + TypedRequestImpl.this + "]HandleResponseCallBack onFailure call " + t.getLocalizedMessage());
 
             callBack.onLoadFailed(0, t.getLocalizedMessage());
         }
     }
 
-    public void request(Type[] types, @NonNull OnDataLoaded<T> callback, String apiAnnotation, Object... args) {
+    private void request(Type[] types, @NonNull OnDataLoaded<T> callback, String apiAnnotation, Object... args) {
         this.callBack = callback;
         initApiClass((Class<U>) types[1]);
         Method method = getMethodInApi(apiAnnotation);
@@ -130,13 +180,13 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
         try {
             StringBuilder stringBuilder = new StringBuilder();
             for (Object arg : args) {
-                stringBuilder.append(arg + ",");
+                stringBuilder.append(arg.toString() + ",");
             }
             call = (Call<T>) method.invoke(dataApi, args);
             call.enqueue(new HandleResponseCallBack());
 
-            Logger.logI("TypedRequest[" + this + "] ------>[" + dataApiClass + "]" + "(" + method.getName() + ")" + " args{" + stringBuilder.toString() + "}");
-        } catch (IllegalAccessException | InvocationTargetException e) {
+            Logger.logI("TypedRequest[" + this + "] ------>[" + dataApiClass + "]" + "  (" + method.toGenericString() + ")" + " args{" + stringBuilder.toString() + "}");
+        } catch (Exception e) {
             e.printStackTrace();
             Logger.logE("invoke api method err! \n" + e.getLocalizedMessage());
 

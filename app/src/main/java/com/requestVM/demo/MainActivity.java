@@ -12,7 +12,6 @@ import androidx.lifecycle.Observer;
 import com.flowerroad.requestviewmodel.R;
 import com.flowerroad.requestviewmodel.databinding.ActivityMainBinding;
 import com.ocode.requestvm.request.RequestObj;
-import com.ocode.requestvm.request.RetrofitConfig;
 import com.ocode.requestvm.viewmodel.RequestViewModel;
 import com.ocode.requestvm.viewmodel.RequestViewModelProvider;
 import com.requestVM.demo.api.ResponseJsonBean;
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         RequestObj<ResponseJsonBean, PriceBean> requestObj = new RequestObj<ResponseJsonBean, PriceBean>(RetrofitDataApi.requestOilprice) {
             @Override
             public Object[] getArgs() {
-                return new Object[]{formatInputArg()};
+                return new Object[]{formatInputArg(),"test"};
             }
         };
 
