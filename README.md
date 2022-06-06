@@ -45,6 +45,7 @@ public interface RetrofitDataApi {
     public static final String requestOilprice = "/oilprice/index?key=3c5ee42145c852de4147264f25b858dc";
     public static final String baseUrl = "http://api.tianapi.com";
     
+    //ResponseJsonBean对象是自定义的服务器返回json类型，可以是泛型类型，如 ResponseData<UserInfo>
     @GET(requestOilprice)
     Call<ResponseJsonBean> getOliPrice(@Query("prov") String prov);
 }
