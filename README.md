@@ -10,7 +10,7 @@ github 地址：https://github.com/miaotaoii/RequestViewModel.git
 
 无需关心LiveData和retroift request的创建，只要关注UI 控件更新数据的Bean对象
 
- RequestViewMode自动对LiveData进行缓存管理，每个retrofit api接口复用一个livedata
+RequestViewMode自动对LiveData进行缓存管理，每个retrofit api接口复用一个livedata
 
 # Gradle 
 项目根目录下 build.gradle 添加
@@ -75,7 +75,7 @@ RetrofitConfig.getInstance(RetrofitDataApi.baseUrl).init();
 你需要设置请求参数，并在`RequestObj`构造器中传入retrofit api接口中的的GET或POST注解字符串。参数顺序必须保持和`requestObj` 的api注解对应的api接口参数一致
 
 
-`RequestObj<T,V>` 第一个泛型声明api请求返回的类型，`T`类型支持本身为泛型类型；第二个泛型声明了RequestLiveData持有的数据类型，即UI更新所需要的数据类型；你将会在你自己继承`RequestLiveData`的类中，对返回数据进行转化解析并post到UI中
+`RequestObj<T>`  泛型声明api请求返回的类型，`T`类型支持本身为泛型类型； 你将会在你自己继承`RequestLiveData`的类中，对返回数据进行转化解析并post到UI中
 
 ```java
 protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +83,7 @@ protected void onCreate(Bundle savedInstanceState) {
 		... ...
 		
 //构建请求对象，设置请求api注解和参数,设置api返回对象类型和livedata数据类型
-RequestObj<ResponseJsonBean, PriceBean> requestObj = new RequestObj<ResponseJsonBean, PriceBean>(RetrofitDataApi.requestOilprice) {
+RequestObj<ResponseJsonBean> requestObj = new RequestObj<ResponseJsonBean>(RetrofitDataApi.requestOilprice) {
             @Override
             public Object[] getArgs() {
                 return new Object[]{formatInputArg()};
@@ -94,7 +94,7 @@ RequestObj<ResponseJsonBean, PriceBean> requestObj = new RequestObj<ResponseJson
 ```
 
 ## 4.继承RequestLiveData，处理返回数据
-在这里将服务器返回的数据类型转换为UI需要的类型，并通过`LiveData post()`数据到UI
+在这里将服务器返回的数据类型转换为UI需要的类型，并通过`LiveData post()`数据到UI。第一个泛型参数是retrofit请求返回的数据类型，第二个泛型参数是LiveData持有的数据类型。
 
 ```java
 public class OliPriceLiveData extends RequestLiveData<ResponseJsonBean, PriceBean> {
@@ -146,7 +146,7 @@ protected void onCreate(Bundle savedInstanceState) {
 	 					    RequestViewModel.class
 	 					    ); 
 //构建请求对象，设置请求api注解和参数,设置api返回对象类型和livedata数据类型
-	RequestObj<ResponseJsonBean, PriceBean> requestObj = new RequestObj<ResponseJsonBean, 	PriceBean>(RetrofitDataApi.requestOilprice) {
+	RequestObj<ResponseJsonBean> requestObj = new RequestObj<ResponseJsonBean>(RetrofitDataApi.requestOilprice) {
             @Override
             public Object[] getArgs() {
                 return new Object[]{formatInputArg()};
