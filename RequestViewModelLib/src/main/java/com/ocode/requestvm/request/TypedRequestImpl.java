@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,9 +42,9 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
         this.dataApiClass = (Class<U>) dataApiClass;
     }
 
-    private RequestObj<T, ?> requestObj;
+    private RequestObj<T> requestObj;
 
-    public void setRequestObj(RequestObj<T, ?> requestObj) {
+    public void setRequestObj(RequestObj<T> requestObj) {
         this.requestObj = requestObj;
     }
 
@@ -126,39 +127,77 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
 
     public void request() {
         Type[] types = new Type[]{requestObj.getReturnClsType(), dataApiClass};
+        Logger.logI("try create request with requestObj:" + requestObj.toString());
         request(types, callBack, requestObj.getRequestKey(), requestObj.getArgsInternal());
     }
 
-    private class HandleResponseCallBack implements Callback<T> {
+
+    public static class HandleResponseCallBack<T> implements Callback<T> {
+        private OnDataLoaded<T> callBack;
+        private TypedRequestImpl typedRequest;
+        private volatile boolean hasOwnerDestroyed = false;
+
+        public HandleResponseCallBack(OnDataLoaded<T> callBack, TypedRequestImpl typedRequest) {
+            this.callBack = callBack;
+            this.typedRequest = typedRequest;
+        }
+
+        public void onLifecycleOwnerDestroyed() {
+            hasOwnerDestroyed = true;
+            typedRequest.removeResponseHandler(this);
+            callBack = null;
+            this.typedRequest = null;
+        }
+
+        public void checkOwnerState() throws OwnerDestroyedException {
+            if (hasOwnerDestroyed) {
+                Logger.logI("owner has destroyed!! ");
+                throw new OwnerDestroyedException("owner has destroyed");
+            }
+        }
+
         @Override
         public void onResponse(Call<T> call, Response<T> response) {
-            if (!response.isSuccessful()) {
-                //网络请求失败的处理
-                Logger.logI("TypedRequest[" + TypedRequestImpl.this + "]HandleResponseCallBack onResponse false " + response.code());
-                Logger.logI("TypedRequest[" + TypedRequestImpl.this + "]msg =  " + response.message());
-                callBack.onLoadFailed(response.code(), response.message());
-                return;
-            }
-            //数据响应的解析
-
-            T body = response.body();
-            int code = response.code();
-            Logger.logI("TypedRequest[" + TypedRequestImpl.this + " ]onResponse call return success code=" + code);
-            switch (code) {
-                case 200://有数据
-                    callBack.onLoadSuccess(body);
-                    break;
-                default://数据有异常
+            try {
+                checkOwnerState();
+                if (!response.isSuccessful()) {
+                    //网络请求失败的处理
+                    Logger.logI("TypedRequest[" + this + "]HandleResponseCallBack onResponse false " + response.code());
+                    Logger.logI("TypedRequest[" + this + "]msg =  " + response.message());
+                    if (callBack == null) return;
                     callBack.onLoadFailed(response.code(), response.message());
-                    break;
+                    return;
+                }
+                //数据响应的解析
+
+                T body = response.body();
+                int code = response.code();
+                Logger.logI("TypedRequest[" + this + " ]onResponse call return success code=" + code);
+                switch (code) {
+                    case 200://有数据
+                        if (callBack == null) return;
+                        callBack.onLoadSuccess(body);
+                        break;
+                    default://数据有异常
+                        if (callBack == null) return;
+                        callBack.onLoadFailed(response.code(), response.message());
+                        break;
+                }
+            } catch (OwnerDestroyedException e) {
+                Logger.logI(e.getMessage());
             }
         }
 
         @Override
         public void onFailure(Call<T> call, Throwable t) {
-            Logger.logE("TypedRequest[" + TypedRequestImpl.this + "]HandleResponseCallBack onFailure call " + t.getLocalizedMessage());
-
-            callBack.onLoadFailed(0, t.getLocalizedMessage());
+            Logger.logE("TypedRequest[" + this + "]HandleResponseCallBack onFailure call " + t.getLocalizedMessage());
+            try {
+                checkOwnerState();
+                if (callBack == null) return;
+                callBack.onLoadFailed(0, t.getLocalizedMessage());
+            } catch (OwnerDestroyedException e) {
+                Logger.logI(e.getMessage());
+            }
         }
     }
 
@@ -174,6 +213,33 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
         invokeApiMethod(method, callback, args);
     }
 
+    private int requestingCount;
+
+    //释放这个请求对象
+    public void onDestroyed() {
+        Logger.logI("TypedRequest["+this+"]onDestroyed");
+        cancelAllCalling();
+        destroyAllHandler();
+    }
+
+    void destroyAllHandler() {
+        for (HandleResponseCallBack<T> handler :
+                callBacks) {
+            handler.onLifecycleOwnerDestroyed();
+        }
+    }
+
+    //todo 取消所有未完成的call
+    void cancelAllCalling() {
+
+    }
+
+    private CopyOnWriteArrayList<HandleResponseCallBack<T>> callBacks = new CopyOnWriteArrayList<>();
+
+    public void removeResponseHandler(HandleResponseCallBack handler) {
+        callBacks.remove(handler);
+    }
+
     private void invokeApiMethod(Method method, @NonNull OnDataLoaded<T> callback, Object... args) {
         callBack = callback;
         Call<T> call = null;
@@ -183,7 +249,10 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
                 stringBuilder.append(arg.toString() + ",");
             }
             call = (Call<T>) method.invoke(dataApi, args);
-            call.enqueue(new HandleResponseCallBack());
+            HandleResponseCallBack<T> handleResponseCallBack = new HandleResponseCallBack<>(callBack, this);
+            callBacks.add(handleResponseCallBack);
+            call.enqueue(handleResponseCallBack);
+//            new Thread(new TestTask<T>(handleResponseCallBack)).start();
 
             Logger.logI("TypedRequest[" + this + "] ------>[" + dataApiClass + "]" + "  (" + method.toGenericString() + ")" + " args{" + stringBuilder.toString() + "}");
         } catch (Exception e) {

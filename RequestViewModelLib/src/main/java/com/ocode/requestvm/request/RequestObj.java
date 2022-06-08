@@ -2,14 +2,14 @@ package com.ocode.requestvm.request;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 /**
  * @param <T> api 接口的返回数据类型
- * @param <S> livedata的数据类型
  * @author:eric
  * @date:6/2/22
  */
-abstract public class RequestObj<T, S> extends Request<T> {
+abstract public class RequestObj<T> extends Request<T> {
 
     private Object[] args;
     private String apiAnnotation;
@@ -23,7 +23,7 @@ abstract public class RequestObj<T, S> extends Request<T> {
     }
 
     public Type getReturnClsType() {
-        Type type =  ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        Type type = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         return type;
     }
 
@@ -43,16 +43,12 @@ abstract public class RequestObj<T, S> extends Request<T> {
         return apiAnnotation;
     }
 
-    @Deprecated
-    public String getRequestKey_() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(getReturnClsType().getClass().getCanonicalName());
-        if (args != null && args.length > 0) {
-            for (Object arg :
-                    args) {
-                stringBuilder.append("-" + arg.getClass().getCanonicalName());
-            }
-        }
-        return stringBuilder.toString();
+    @Override
+    public String toString() {
+        return "RequestObj{" +
+                "args=" + Arrays.toString(getArgsInternal()) +
+                ", apiAnnotation='" + apiAnnotation + '\'' +
+                ", ReturnClsType='" + getReturnClsType() + '\'' +
+                '}';
     }
 }

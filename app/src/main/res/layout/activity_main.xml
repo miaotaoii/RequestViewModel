@@ -90,5 +90,13 @@
             android:layout_marginTop="20dp"
             android:text='@{"更新时间:"+oilData.time,default= "更新时间:"}'
             android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:text="下一页" />
     </LinearLayout>
 </layout>

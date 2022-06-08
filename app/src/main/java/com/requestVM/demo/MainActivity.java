@@ -1,5 +1,6 @@
 package com.requestVM.demo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.requestVM.demo.api.ResponseJsonBean;
 import com.requestVM.demo.api.RetrofitDataApi;
 import com.requestVM.demo.beans.PriceBean;
 import com.requestVM.demo.viewmodel.OliPriceLiveData;
+import com.requestVM.demo.viewmodel.SecondActivity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,13 +40,13 @@ public class MainActivity extends AppCompatActivity {
                 RetrofitDataApi.class, RequestViewModel.class);
 
         //构建请求对象，设置请求api注解和参数,设置api返回对象类型和livedata数据类型
-        RequestObj<ResponseJsonBean, PriceBean> requestObj = new RequestObj<ResponseJsonBean, PriceBean>(RetrofitDataApi.requestOilprice) {
+        RequestObj<ResponseJsonBean> requestObj = new RequestObj<ResponseJsonBean>(RetrofitDataApi.requestOilprice) {
             @Override
             public Object[] getArgs() {
                 return new Object[]{formatInputArg(),"test"};
             }
         };
-
+        requestObj.setArgs(new Object[]{formatInputArg()});
 
         //livedata绑定view
         liveData = requestViewModel.getRequestLiveData(requestObj, OliPriceLiveData.class);
@@ -76,7 +78,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        mainBinding.btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private String formatInputArg() {

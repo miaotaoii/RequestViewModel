@@ -7,9 +7,10 @@ import com.ocode.requestvm.request.RequestObj;
 
 /**
  * @author:eric
- * @date:6/2/22
+ * @date:6/2/22 关于资源的释放：在livedata onInactive时，告诉持有它的ViewModel 来释放对它的引用，
+ * 同时还要处理它对应的request的释放
  */
-abstract public class RequestLiveData<S, T> extends MutableLiveData<T> implements OnDataLoaded<S> {
+abstract public class RequestLiveData<S, T> extends MutableLiveData<T> implements OnDataLoaded<S>{
 
     private String requestKey;
     private RequestViewModel requestViewModel;
@@ -30,14 +31,13 @@ abstract public class RequestLiveData<S, T> extends MutableLiveData<T> implement
         requestViewModel.request(this);
     }
 
-    private RequestObj requestObj;
+    private RequestObj<S> requestObj;
 
-    public void setRequestObj(RequestObj requestObj) {
+    void setRequestObj(RequestObj<S> requestObj) {
         this.requestObj = requestObj;
     }
 
-    public RequestObj<Object, Object> getRequestObj() {
-        return  this.requestObj;
+    public RequestObj<S> getRequestObj() {
+        return requestObj;
     }
-
 }

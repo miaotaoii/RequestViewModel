@@ -1,7 +1,6 @@
 package com.requestVM.demo.viewmodel;
 
-import android.widget.Toast;
-
+import com.ocode.requestvm.util.Logger;
 import com.ocode.requestvm.viewmodel.RequestLiveData;
 import com.requestVM.demo.api.ResponseJsonBean;
 import com.requestVM.demo.beans.PriceBean;
@@ -26,7 +25,22 @@ public class OliPriceLiveData extends RequestLiveData<ResponseJsonBean, PriceBea
     }
 
     @Override
+    protected void onActive() {
+        super.onActive();
+        Logger.logI("OliPriceLiveData onActive");
+
+    }
+
+    @Override
+    protected void onInactive() {
+        super.onInactive();
+        Logger.logI("OliPriceLiveData onInactive");
+
+    }
+
+    @Override
     public void onLoadFailed(int code, String msg) {
+        Logger.logI("OliPriceLiveData2 onLoadFailed ");
         PriceBean priceBean = new PriceBean();
         priceBean.setCode(code);
         priceBean.setMsg(msg);
