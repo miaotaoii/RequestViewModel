@@ -59,11 +59,12 @@ public class RequestViewModel extends ViewModel implements LifecycleEventObserve
     }
 
     /**
-     * @param <S> api请求返回的数据类型
-     * @param <T> livedata的数据类型
-     * @param <V> RequestLiveData的类型
+     * @param <S>              api请求返回的数据类型
+     * @param <T>              livedata的数据类型
+     * @param <V>              RequestLiveData的类型
+     * @param requestFirstAuto 首次获取创建时是否自动请求一次
      */
-    public <S, T, V extends RequestLiveData<S, T>> V getRequestLiveData(RequestObj<S> requestObj, Class<V> liveDataCls) {
+    public <S, T, V extends RequestLiveData<S, T>> V getRequestLiveData(RequestObj<S> requestObj, Class<V> liveDataCls, boolean requestFirstAuto) {
         String key = requestObj.getRequestKey();
         RequestLiveData<S, T> liveData;
         if (!map.containsKey(key)) {
@@ -87,8 +88,9 @@ public class RequestViewModel extends ViewModel implements LifecycleEventObserve
             requestData.setTypedRequest(typedRequest);
             Logger.logI("create and save LiveData for key " + key);
             map.put(key, requestData);
-
-            liveData.refresh();
+            if (requestFirstAuto) {
+                liveData.refresh();
+            }
         } else {
             liveData = (RequestLiveData<S, T>) map.get(key).getRequestLiveData();
         }

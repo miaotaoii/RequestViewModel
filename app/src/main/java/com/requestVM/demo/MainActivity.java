@@ -43,13 +43,13 @@ public class MainActivity extends AppCompatActivity {
         RequestObj<ResponseJsonBean> requestObj = new RequestObj<ResponseJsonBean>(RetrofitDataApi.requestOilprice) {
             @Override
             public Object[] getArgs() {
-                return new Object[]{formatInputArg(),"test"};
+                return new Object[]{formatInputArg(), "test"};
             }
         };
         requestObj.setArgs(new Object[]{formatInputArg()});
 
         //livedata绑定view
-        liveData = requestViewModel.getRequestLiveData(requestObj, OliPriceLiveData.class);
+        liveData = requestViewModel.getRequestLiveData(requestObj, OliPriceLiveData.class, true);
         mainBinding.setOilData(liveData);
 
         //生成api对应的livedata并观察数据返回，首次生成livedata时，会主动请求一次数据

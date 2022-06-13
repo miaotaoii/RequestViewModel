@@ -36,7 +36,7 @@ public class SecondActivity extends AppCompatActivity {
                 return new Object[]{"甘肃"};
             }
         };
-        requestViewModel.getRequestLiveData(requestObj, OliPriceLiveData2.class).observe(this, new Observer<PriceBean>() {
+        requestViewModel.getRequestLiveData(requestObj, OliPriceLiveData2.class, true).observe(this, new Observer<PriceBean>() {
             @Override
             public void onChanged(PriceBean priceBean) {
                 Log.i("SecondActivity ", "释放view model");
