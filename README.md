@@ -29,7 +29,7 @@ module的build.gradle 中添加：
 ```
 dependencies {
 
-	implementation 'com.github.miaotaoii:RequestViewModel:1.0.3'
+	implementation 'com.github.miaotaoii:RequestViewModel:1.0.4'
 
 }
 ```
@@ -128,8 +128,8 @@ public class OliPriceLiveData extends RequestLiveData<ResponseJsonBean, PriceBea
 
 
 
-> **`RequestLiveData`将在首次创建时发出一次请求；如你正在使用google
-> DataBinding框架，在`RequestLiveData` 接收数据并postValue后，数据将自动更新到UI控件。**
+> **`RequestLiveData`将根据传入的第三个参数决定是否在首次创建时发出一次请求；如你正在使用google
+> DataBinding框架，建议传入true，在`RequestLiveData` 接收数据并postValue后，数据将自动更新到UI控件。**
 
 
 
@@ -153,7 +153,7 @@ protected void onCreate(Bundle savedInstanceState) {
             }
         };
 
-	liveData = requestViewModel.getRequestLiveData(requestObj, OliPriceLiveData.class);
+	liveData = requestViewModel.getRequestLiveData(requestObj, OliPriceLiveData.class,true);
 
 	... ... 
 }
