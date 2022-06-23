@@ -1,5 +1,7 @@
 package com.ocode.requestvm.request;
 
+import android.text.TextUtils;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -22,6 +24,11 @@ abstract public class RequestObj<T> extends Request<T> {
         this.apiAnnotation = apiAnnotation;
     }
 
+    public RequestObj(String apiAnnotation, String requestKey) {
+        this.apiAnnotation = apiAnnotation;
+        this.requestKey = requestKey;
+    }
+
     public Type getReturnClsType() {
         Type type = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         return type;
@@ -38,9 +45,21 @@ abstract public class RequestObj<T> extends Request<T> {
         return getArgs();
     }
 
+    private String requestKey;
+
+    public String getApiAnnotation() {
+        return apiAnnotation;
+    }
+
+    public void setRequestKey(String requestKey) {
+        this.requestKey = requestKey;
+    }
 
     public String getRequestKey() {
-        return apiAnnotation;
+        if (TextUtils.isEmpty(requestKey)) {
+            return getApiAnnotation();
+        }
+        return requestKey;
     }
 
     @Override

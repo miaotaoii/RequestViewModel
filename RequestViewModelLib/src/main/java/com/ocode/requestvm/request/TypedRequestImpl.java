@@ -128,7 +128,7 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
     public void request() {
         Type[] types = new Type[]{requestObj.getReturnClsType(), dataApiClass};
         Logger.logI("try create request with requestObj:" + requestObj.toString());
-        request(types, callBack, requestObj.getRequestKey(), requestObj.getArgsInternal());
+        request(types, callBack, requestObj.getApiAnnotation(), requestObj.getArgsInternal());
     }
 
 
@@ -217,7 +217,7 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
 
     //释放这个请求对象
     public void onDestroyed() {
-        Logger.logI("TypedRequest["+this+"]onDestroyed");
+        Logger.logI("TypedRequest[" + this + "]onDestroyed");
         cancelAllCalling();
         destroyAllHandler();
     }
