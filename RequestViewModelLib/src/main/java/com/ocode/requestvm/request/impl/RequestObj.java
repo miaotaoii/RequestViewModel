@@ -1,6 +1,8 @@
-package com.ocode.requestvm.request;
+package com.ocode.requestvm.request.impl;
 
 import android.text.TextUtils;
+
+import com.ocode.requestvm.request.Request;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

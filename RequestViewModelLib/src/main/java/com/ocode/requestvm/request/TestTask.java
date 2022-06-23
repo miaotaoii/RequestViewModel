@@ -1,13 +1,15 @@
 package com.ocode.requestvm.request;
 
+import com.ocode.requestvm.callback.HandleResponseCallBack;
+
 /**
  * @author:eric
  * @date:6/8/22
  */
-public class TestTask<T> implements Runnable {
-    TypedRequestImpl.HandleResponseCallBack<T> handleResponseCallBack;
+class TestTask<T> implements Runnable {
+    HandleResponseCallBack<T> handleResponseCallBack;
 
-    public TestTask(TypedRequestImpl.HandleResponseCallBack handleResponseCallBack) {
+    public TestTask(HandleResponseCallBack handleResponseCallBack) {
         this.handleResponseCallBack = handleResponseCallBack;
     }
 

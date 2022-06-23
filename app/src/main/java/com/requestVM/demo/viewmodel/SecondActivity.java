@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
 import com.flowerroad.requestviewmodel.R;
-import com.ocode.requestvm.request.RequestObj;
+import com.ocode.requestvm.request.impl.RequestObj;
 import com.ocode.requestvm.viewmodel.RequestViewModel;
 import com.ocode.requestvm.viewmodel.RequestViewModelProvider;
 import com.requestVM.demo.api.RetrofitDataApi;

@@ -2,8 +2,8 @@ package com.ocode.requestvm.viewmodel;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.ocode.requestvm.request.OnDataLoaded;
-import com.ocode.requestvm.request.RequestObj;
+import com.ocode.requestvm.callback.OnDataLoaded;
+import com.ocode.requestvm.request.impl.RequestObj;
 
 /**
  * @author:eric

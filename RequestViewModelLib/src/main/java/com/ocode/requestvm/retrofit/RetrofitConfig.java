@@ -1,4 +1,4 @@
-package com.ocode.requestvm.request;
+package com.ocode.requestvm.retrofit;
 
 import com.ocode.requestvm.util.Logger;
 import com.ocode.requestvm.util.Utils;
@@ -44,7 +44,7 @@ public class RetrofitConfig {
         Logger.setLogLevel(logLevel);
     }
 
-    static RetrofitConfig getInstance() {
+    public static RetrofitConfig getInstance() {
         Utils.checkNotNull(ourInstance, "RetrofitConfig has not been init");
         return ourInstance;
     }

@@ -1,7 +1,11 @@
-package com.ocode.requestvm.request;
+package com.ocode.requestvm.request.impl;
 
 import androidx.annotation.NonNull;
 
+import com.ocode.requestvm.callback.HandleResponseCallBack;
+import com.ocode.requestvm.callback.OnDataLoaded;
+import com.ocode.requestvm.request.TypedRequest;
+import com.ocode.requestvm.retrofit.RetrofitConfig;
 import com.ocode.requestvm.util.Logger;
 
 import java.lang.annotation.Annotation;
@@ -12,8 +16,6 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HEAD;
@@ -29,7 +31,7 @@ import retrofit2.http.PUT;
  * @author:eric
  * @date:6/1/22
  */
-public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
+public final class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
     private OnDataLoaded<T> callBack;
     private U dataApi;
     private Class<U> dataApiClass;
@@ -132,75 +134,6 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
     }
 
 
-    public static class HandleResponseCallBack<T> implements Callback<T> {
-        private OnDataLoaded<T> callBack;
-        private TypedRequestImpl typedRequest;
-        private volatile boolean hasOwnerDestroyed = false;
-
-        public HandleResponseCallBack(OnDataLoaded<T> callBack, TypedRequestImpl typedRequest) {
-            this.callBack = callBack;
-            this.typedRequest = typedRequest;
-        }
-
-        public void onLifecycleOwnerDestroyed() {
-            hasOwnerDestroyed = true;
-            typedRequest.removeResponseHandler(this);
-            callBack = null;
-            this.typedRequest = null;
-        }
-
-        public void checkOwnerState() throws OwnerDestroyedException {
-            if (hasOwnerDestroyed) {
-                Logger.logI("owner has destroyed!! ");
-                throw new OwnerDestroyedException("owner has destroyed");
-            }
-        }
-
-        @Override
-        public void onResponse(Call<T> call, Response<T> response) {
-            try {
-                checkOwnerState();
-                if (!response.isSuccessful()) {
-                    //网络请求失败的处理
-                    Logger.logI("TypedRequest[" + this + "]HandleResponseCallBack onResponse false " + response.code());
-                    Logger.logI("TypedRequest[" + this + "]msg =  " + response.message());
-                    if (callBack == null) return;
-                    callBack.onLoadFailed(response.code(), response.message());
-                    return;
-                }
-                //数据响应的解析
-
-                T body = response.body();
-                int code = response.code();
-                Logger.logI("TypedRequest[" + this + " ]onResponse call return success code=" + code);
-                switch (code) {
-                    case 200://有数据
-                        if (callBack == null) return;
-                        callBack.onLoadSuccess(body);
-                        break;
-                    default://数据有异常
-                        if (callBack == null) return;
-                        callBack.onLoadFailed(response.code(), response.message());
-                        break;
-                }
-            } catch (OwnerDestroyedException e) {
-                Logger.logI(e.getMessage());
-            }
-        }
-
-        @Override
-        public void onFailure(Call<T> call, Throwable t) {
-            Logger.logE("TypedRequest[" + this + "]HandleResponseCallBack onFailure call " + t.getLocalizedMessage());
-            try {
-                checkOwnerState();
-                if (callBack == null) return;
-                callBack.onLoadFailed(0, t.getLocalizedMessage());
-            } catch (OwnerDestroyedException e) {
-                Logger.logI(e.getMessage());
-            }
-        }
-    }
-
     private void request(Type[] types, @NonNull OnDataLoaded<T> callback, String apiAnnotation, Object... args) {
         this.callBack = callback;
         initApiClass((Class<U>) types[1]);
@@ -225,7 +158,7 @@ public class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
     void destroyAllHandler() {
         for (HandleResponseCallBack<T> handler :
                 callBacks) {
-            handler.onLifecycleOwnerDestroyed();
+            handler.onClearHandleCallback();
         }
     }
 

@@ -12,7 +12,7 @@ import androidx.lifecycle.Observer;
 
 import com.flowerroad.requestviewmodel.R;
 import com.flowerroad.requestviewmodel.databinding.ActivityMainBinding;
-import com.ocode.requestvm.request.RequestObj;
+import com.ocode.requestvm.request.impl.RequestObj;
 import com.ocode.requestvm.viewmodel.RequestViewModel;
 import com.ocode.requestvm.viewmodel.RequestViewModelProvider;
 import com.requestVM.demo.api.ResponseJsonBean;
@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         //使用databinding绑定view
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
@@ -85,6 +84,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return super.onRetainCustomNonConfigurationInstance();
     }
 
     private String formatInputArg() {

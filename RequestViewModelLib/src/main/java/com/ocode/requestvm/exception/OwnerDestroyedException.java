@@ -1,10 +1,10 @@
-package com.ocode.requestvm.request;
+package com.ocode.requestvm.exception;
 
 /**
  * @author:eric
  * @date:6/8/22
  */
-class OwnerDestroyedException extends Exception{
+public class OwnerDestroyedException extends Exception {
     public OwnerDestroyedException(String message) {
         super(message);
     }

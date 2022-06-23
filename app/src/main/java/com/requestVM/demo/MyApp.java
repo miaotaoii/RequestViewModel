@@ -2,7 +2,7 @@ package com.requestVM.demo;
 
 import android.app.Application;
 
-import com.ocode.requestvm.request.RetrofitConfig;
+import com.ocode.requestvm.retrofit.RetrofitConfig;
 import com.ocode.requestvm.util.Logger;
 import com.requestVM.demo.api.RetrofitDataApi;
 

@@ -1,13 +1,9 @@
 package com.ocode.requestvm.viewmodel;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModel;
 
-import com.ocode.requestvm.request.RequestObj;
-import com.ocode.requestvm.request.TypedRequestImpl;
+import com.ocode.requestvm.request.impl.RequestObj;
+import com.ocode.requestvm.request.impl.TypedRequestImpl;
 import com.ocode.requestvm.util.Logger;
 
 import java.lang.reflect.Type;
@@ -17,12 +13,15 @@ import java.util.HashMap;
  * @author:eric
  * @date:6/2/22
  */
-public class RequestViewModel extends ViewModel implements LifecycleEventObserver {
+public class RequestViewModel extends ViewModel {
     @Override
-    public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
-        if (event == Lifecycle.Event.ON_DESTROY) {
-            for (String key : map.keySet()) {
-                RequestDataWrapper wrapper = map.get(key);
+    protected void onCleared() {
+        super.onCleared();
+        //  考虑屏幕旋转时 此处的处理，旋转时viewmodel 不会被销毁，livedata不应该被销毁
+        //在activity彻底脱离LifeCycle声明周期时，才会执行onCleared ，解除对ViewModel的引用
+        for (String key : map.keySet()) {
+            RequestDataWrapper wrapper = map.get(key);
+            if (wrapper != null) {
                 wrapper.getTypedRequest().onDestroyed();
             }
         }
