@@ -29,7 +29,7 @@ module的build.gradle 中添加：
 ```
 dependencies {
 
-	implementation 'com.github.miaotaoii:RequestViewModel:1.0.4'
+	implementation 'com.github.miaotaoii:RequestViewModel:1.0.5'
 
 }
 ```
@@ -203,6 +203,12 @@ I/[RequestViewModel]: TypedRequest[com.ocode.requestvm.request.TypedRequestImpl@
 I/[RequestViewModel]: TypedRequest[com.ocode.requestvm.request.TypedRequestImpl@96f475c ]onResponse call return success code=200
 
 ```
+
+## 9.更多用法
+### 9.1如何实现一个api接口对应多个不同的livedata对象 【支持版本1.0.5及以上】
+在1.0.5之前的版本中，通过 ``` new RequestObj<ResponseJsonBean>(RetrofitDataApi.requestOilprice) ```构建请求对象时，传入的api 注解字符串将作为 RequestLiveData 默认的key，因此同一个RequestViewModel中的Map容器中，对于同一个retrofit api，只会缓存唯一一个LiveData；
+
+现在，你可以使用   ``` public RequestObj(String apiAnnotation, String requestKey) {...}``` 接口来创建自定义requestKey的```RequestObj```,这可以让你在同一个RequestViewModel中缓存使用同一个api接口的不同的LiveData对象，比如多个Fragment使用同一个api接口，但是要同时使用不同的LiveData来持有对应的页面数据；
 
 
 
