@@ -210,6 +210,14 @@ I/[RequestViewModel]: TypedRequest[com.ocode.requestvm.request.TypedRequestImpl@
 
 现在，你可以使用   ``` public RequestObj(String apiAnnotation, String requestKey) {...}``` 接口来创建自定义requestKey的```RequestObj```,这可以让你在同一个RequestViewModel中缓存使用同一个api接口的不同的LiveData对象，比如多个Fragment使用同一个api接口，但是要同时使用不同的LiveData来持有对应的页面数据；
 
+### 9.2关于及时释放内存的处理
+1.框架内部处理了Activity重建的时的情况，保证LiveData对象一直存在于ViewModel声明周期中，且在Activity真正finished时不发生内存泄漏的同时，在Activity由于旋转或处于后台销毁重建时，不影响已有的请求事件，且不影响后续的事件请求。
+
+2.处理了ViewModel生命周期,在ViewModel生命周期结束时，对request请求对象内存进行清理，避免内存泄漏。自动取消所有未完成的网络请求，清理回调，节省资源。
+
+3.支持使用不同的request obj对象请求同一api的行为；可以在每次getLiveData时传入新的RequestObj对象，只要request key（request key默认是retrofit api的注解字符串，也可以使用自定义的key值） 是不变的，就会复用旧的LiveData，并且会刷新LiveData内部持有的RequestObj对象为最新设置的对象。
+
+
 
 
 
