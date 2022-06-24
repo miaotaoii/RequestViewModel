@@ -29,7 +29,7 @@ module的build.gradle 中添加：
 ```
 dependencies {
 
-	implementation 'com.github.miaotaoii:RequestViewModel:1.0.5'
+	implementation 'com.github.miaotaoii:RequestViewModel:1.0.6'
 
 }
 ```
