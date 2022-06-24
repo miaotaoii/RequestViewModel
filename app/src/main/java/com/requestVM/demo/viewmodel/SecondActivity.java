@@ -11,9 +11,9 @@ import com.flowerroad.requestviewmodel.R;
 import com.ocode.requestvm.request.impl.RequestObj;
 import com.ocode.requestvm.viewmodel.RequestViewModel;
 import com.ocode.requestvm.viewmodel.RequestViewModelProvider;
+import com.requestVM.demo.api.ResponseJsonBean;
 import com.requestVM.demo.api.RetrofitDataApi;
 import com.requestVM.demo.beans.PriceBean;
-import com.requestVM.demo.beans.ResponseData;
 
 /**
  * @author:eric
@@ -30,17 +30,18 @@ public class SecondActivity extends AppCompatActivity {
         requestViewModel = RequestViewModelProvider.getInstance().get(
                 this, RetrofitDataApi.class, RequestViewModel.class
         );
-        RequestObj<ResponseData<PriceBean>> requestObj = new RequestObj<ResponseData<PriceBean>>(RetrofitDataApi.requestOilprice) {
+        RequestObj<ResponseJsonBean> requestObj = new RequestObj<ResponseJsonBean>(RetrofitDataApi.requestOilprice) {
             @Override
             public Object[] getArgs() {
                 return new Object[]{"甘肃"};
             }
         };
-        requestViewModel.getRequestLiveData(requestObj, OliPriceLiveData2.class, true).observe(this, new Observer<PriceBean>() {
+        OliPriceLiveData liveData = requestViewModel.getRequestLiveData(requestObj, OliPriceLiveData.class, true);
+        liveData.observe(this, new Observer<PriceBean>() {
             @Override
             public void onChanged(PriceBean priceBean) {
                 Log.i("SecondActivity ", "释放view model");
-                requestViewModel = null;
+//                Toast.makeText(SecondActivity.this, "onChanged" + priceBean, Toast.LENGTH_SHORT).show();
             }
         });
     }

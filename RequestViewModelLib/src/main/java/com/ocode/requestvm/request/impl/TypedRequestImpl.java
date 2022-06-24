@@ -152,26 +152,41 @@ public final class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
     public void onDestroyed() {
         Logger.logI("TypedRequest[" + this + "]onDestroyed");
         cancelAllCalling();
-        destroyAllHandler();
+//        destroyAllHandler();
+        this.callBack = null;
     }
 
-    void destroyAllHandler() {
-        for (HandleResponseCallBack<T> handler :
-                callBacks) {
-            handler.onClearHandleCallback();
+    public void onCallFinished(HandleResponseCallBack handler) {
+        for (CallbackWrapper wrapper :
+                callWrapeprs) {
+            Logger.logI("移除CallbackWrapper " + wrapper);
+            if (wrapper.callBack == handler) {
+                callWrapeprs.remove(wrapper);
+                break;
+            }
         }
     }
 
     //todo 取消所有未完成的call
     void cancelAllCalling() {
-
+        for (CallbackWrapper w :
+                callWrapeprs) {
+            w.call.cancel();
+        }
     }
 
-    private CopyOnWriteArrayList<HandleResponseCallBack<T>> callBacks = new CopyOnWriteArrayList<>();
+    private static class CallbackWrapper {
+        HandleResponseCallBack callBack;
+        Call call;
 
-    public void removeResponseHandler(HandleResponseCallBack handler) {
-        callBacks.remove(handler);
+        public CallbackWrapper(HandleResponseCallBack callBack, Call call) {
+            this.callBack = callBack;
+            this.call = call;
+        }
     }
+
+    private CopyOnWriteArrayList<CallbackWrapper> callWrapeprs = new CopyOnWriteArrayList<>();
+
 
     private void invokeApiMethod(Method method, @NonNull OnDataLoaded<T> callback, Object... args) {
         callBack = callback;
@@ -183,7 +198,7 @@ public final class TypedRequestImpl<T, U> extends TypedRequest<T, U> {
             }
             call = (Call<T>) method.invoke(dataApi, args);
             HandleResponseCallBack<T> handleResponseCallBack = new HandleResponseCallBack<>(callBack, this);
-            callBacks.add(handleResponseCallBack);
+            callWrapeprs.add(new CallbackWrapper(handleResponseCallBack, call));
             call.enqueue(handleResponseCallBack);
 //            new Thread(new TestTask<T>(handleResponseCallBack)).start();
 

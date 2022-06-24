@@ -22,12 +22,15 @@ public final class HandleResponseCallBack<T> implements Callback<T> {
         this.typedRequest = typedRequest;
     }
 
-    public void onClearHandleCallback() {
+    public void onCallFinished() {
+        Logger.logI("HandleResponseCallBack onCallFinished start");
         hasOwnerDestroyed = true;
         if (typedRequest != null)
-            typedRequest.removeResponseHandler(this);
+            typedRequest.onCallFinished(this);
         callBack = null;
         this.typedRequest = null;
+        Logger.logI("HandleResponseCallBack onCallFinished end");
+
     }
 
     public void checkOwnerState() throws OwnerDestroyedException {
@@ -67,7 +70,7 @@ public final class HandleResponseCallBack<T> implements Callback<T> {
         } catch (OwnerDestroyedException e) {
             Logger.logI(e.getMessage());
         } finally {
-            onClearHandleCallback();
+            onCallFinished();
         }
     }
 
@@ -81,7 +84,7 @@ public final class HandleResponseCallBack<T> implements Callback<T> {
         } catch (OwnerDestroyedException e) {
             Logger.logI(e.getMessage());
         } finally {
-            onClearHandleCallback();
+            onCallFinished();
         }
     }
 }

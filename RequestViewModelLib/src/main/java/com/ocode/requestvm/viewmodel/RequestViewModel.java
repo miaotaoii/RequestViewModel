@@ -14,6 +14,7 @@ import java.util.HashMap;
  * @date:6/2/22
  */
 public class RequestViewModel extends ViewModel {
+
     @Override
     protected void onCleared() {
         super.onCleared();
@@ -25,6 +26,8 @@ public class RequestViewModel extends ViewModel {
                 wrapper.getTypedRequest().onDestroyed();
             }
         }
+        map.clear();
+        map = null;
     }
 
     private HashMap<String, RequestDataWrapper<?>> map = new HashMap<>();
@@ -92,6 +95,15 @@ public class RequestViewModel extends ViewModel {
             }
         } else {
             liveData = (RequestLiveData<S, T>) map.get(key).getRequestLiveData();
+            //当使用新的requestObj对象来获取缓存的LiveData时，如果有相同的request key将复用之前的LiveData和对应的TypedRequestImpl对象
+            //因此要更新他们中的requestObj对象；这种情况通常发生在开发者主动使用new RequestObj对象或者 Activity旋转重建导致activity中RequestObj对象被重建
+            //如果是activity旋转导致的，那旧的RequestObj可能还持有旧的Activity的引用，并且在retrofit 请求结束前，该引用不会断开GCRoot，
+            //可能造成Activity内存泄漏，因此在更新为新的RequestObj时，还要断开旧的RequestObj的引用链
+            RequestObj oldRequestObj = liveData.getRequestObj();
+            if (oldRequestObj != requestObj) {
+                map.get(key).getTypedRequest().setRequestObj(requestObj);
+                liveData.setRequestObj(requestObj);
+            }
         }
         return (V) liveData;
     }

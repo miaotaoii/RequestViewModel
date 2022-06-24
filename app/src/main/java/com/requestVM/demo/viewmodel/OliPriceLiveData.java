@@ -40,7 +40,7 @@ public class OliPriceLiveData extends RequestLiveData<ResponseJsonBean, PriceBea
 
     @Override
     public void onLoadFailed(int code, String msg) {
-        Logger.logI("OliPriceLiveData2 onLoadFailed ");
+        Logger.logI("OliPriceLiveData onLoadFailed ");
         PriceBean priceBean = new PriceBean();
         priceBean.setCode(code);
         priceBean.setMsg(msg);
